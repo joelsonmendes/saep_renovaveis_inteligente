@@ -1,0 +1,174 @@
+{
+  "app": {
+    "name": "SAEP Renováveis Inteligente",
+    "version": "1.0.0",
+    "subtitle": "Plataforma de preparação, cálculo e transcrição — Técnico em Sistemas de Energia Renovável"
+  },
+  "prova1": {
+    "contexto": {
+      "cidade": "Aracaju/SE",
+      "latitude": -11.014579,
+      "longitude": -37.078816,
+      "temperaturaAmbiente": 28,
+      "consumoMensal_kWh": 3190,
+      "aguaDemanda_L_dia": 2000,
+      "temperaturaConsumo_C": 42,
+      "temperaturaArmazenamento_C": 45,
+      "rede": "Trifásica 127/220 V"
+    },
+    "sas": {
+      "densidadeAgua_kg_L": 1,
+      "calorEspecifico_kJ_kgC": 4.18,
+      "custo_R_L": 7.0
+    },
+    "sfcr": {
+      "hspPadrao": 5.5243,
+      "fatorCorrecaoLesteOeste11": 0.951,
+      "perdas": {
+        "sujidade_pct": 5,
+        "sombras_pct": 4,
+        "temperatura_pct": 6,
+        "conversaoCCCA_pct": 2,
+        "condutores_pct": 1,
+        "mismatching_pct": 2
+      },
+      "custo_R_Wp": 2.4,
+      "moduloProva": {
+        "potencia_Wp": 550,
+        "largura_m": 1.134,
+        "altura_m": 2.278
+      },
+      "cobertura": {
+        "leste": {
+          "largura_m": 5.5,
+          "comprimento_m": 13.2,
+          "inclinacao_graus": 11
+        },
+        "oeste": {
+          "largura_m": 5.5,
+          "comprimento_m": 13.2,
+          "inclinacao_graus": 11
+        }
+      },
+      "referenciaGabarito": {
+        "potenciaCenario1_kWp": 25.3,
+        "potenciaCenario2_kWp": 17.6,
+        "modulos": 32,
+        "modulosPorAgua": 16,
+        "areaMin_m2": 82.7,
+        "inversor_kW": 15,
+        "inversorFases": 3,
+        "mpptsMin": 2,
+        "correnteProjeto_A": 39.36,
+        "caboCA_mm2": 16,
+        "disjuntor_A": 50,
+        "dps": "Classe II, 175 V, 45 kA",
+        "gd": "Microgeração"
+      }
+    },
+    "sp2": {
+      "solucao": "Sistema híbrido conectado à rede com bateria e cargas prioritárias",
+      "ensaios": [
+        "Condutores CA",
+        "Continuidade da ligação à terra",
+        "Polaridade",
+        "Caixas de junção",
+        "Corrente da string",
+        "Tensão de circuito aberto da string",
+        "Resistência de isolamento CC"
+      ]
+    },
+    "sp3": {
+      "defeitos": [
+        {
+          "defeito": "Falha de isolamento na String FV",
+          "reparo": "Remover/corrigir a falha de isolação",
+          "causas": [
+            "Instalação inadequada",
+            "Imperícia do instalador"
+          ]
+        },
+        {
+          "defeito": "Inversão de polaridade na entrada de bateria do inversor off-grid",
+          "reparo": "Corrigir a instalação/polaridade",
+          "causas": [
+            "Imperícia do instalador",
+            "Instalação inadequada"
+          ]
+        },
+        {
+          "defeito": "Ausência de dispositivo de proteção contra sobrecorrente no lado CC do sistema eólico",
+          "reparo": "Instalar/substituir o dispositivo de proteção adequado",
+          "causas": [
+            "Imperícia do instalador",
+            "Instalação inadequada"
+          ]
+        }
+      ]
+    }
+  },
+  "bancada": {
+    "modulo": {
+      "marca": "Q CELLS",
+      "modelo": "Q.POWER L-G5 335",
+      "Pmax_W": 335,
+      "Voc_V": 46.3,
+      "Isc_A": 9.4,
+      "Vmp_V": 37.8,
+      "Imp_A": 8.87,
+      "VsysMax_V": 1000,
+      "fusivelMax_A": 20
+    },
+    "inversores": [
+      {
+        "marca": "MUST",
+        "modelo": "PV1800 / PV18-3024 VPM",
+        "potencia_W": 3000,
+        "banco_V": 24,
+        "saida_Vac": 230,
+        "saida_A": 13,
+        "fases": 1,
+        "mpptMin_V": 30,
+        "mpptMax_V": 120,
+        "vocMax_V": 145,
+        "cargaSolar_A": 60,
+        "cargaMax_A": 80
+      },
+      {
+        "marca": "Victor",
+        "modelo": "NML2000-12V / NML-2000VA-M-12V",
+        "potencia_W": 1600,
+        "potenciaVA": 2000,
+        "banco_V": 12,
+        "saida_Vac": 230,
+        "saida_A": 8.7,
+        "fases": 1,
+        "mpptMin_V": 30,
+        "mpptMax_V": 400,
+        "vocMax_V": 400,
+        "cargaSolarMax_A": 80
+      },
+      {
+        "marca": "REFUsol",
+        "modelo": "REFUone 1.6K-1T",
+        "potencia_W": 1600,
+        "rede_Vac": 220,
+        "saida_A": 7.7,
+        "fases": 1,
+        "mpptMin_V": 50,
+        "mpptMax_V": 500,
+        "vocMax_V": 500,
+        "iopMax_A": 12,
+        "iscMax_A": 15,
+        "ip": "IP65"
+      }
+    ],
+    "bateria": {
+      "marca": "Freedom",
+      "modelo": "DF1000",
+      "tensao_V": 12,
+      "capacidade_Ah": 60,
+      "regime_h": 20
+    }
+  }
+}
