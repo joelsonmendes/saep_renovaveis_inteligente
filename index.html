@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173a5e">
+  <meta name="description" content="Plataforma de treinamento SAEP para Técnico em Sistemas de Energia Renovável">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>SAEP Renováveis Inteligente</title>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">SENAI</div>
+      <div>
+        <strong>Renováveis Inteligente</strong>
+        <small>Preparação SAEP</small>
+      </div>
+    </div>
+
+    <div class="student-card">
+      <label>Aluno<input id="studentName" placeholder="Nome do aluno"></label>
+      <label>Turma<input id="studentClass" placeholder="Turma"></label>
+    </div>
+
+    <nav id="navSteps" class="nav-steps"></nav>
+
+    <div class="sidebar-actions">
+      <button class="btn ghost" id="btnExport">Exportar JSON</button>
+      <label class="btn ghost file-btn">Importar JSON<input id="fileImport" type="file" accept=".json,application/json"></label>
+      <button class="btn ghost" id="btnReset">Resetar projeto</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
+        <div class="eyebrow">Técnico em Sistemas de Energia Renovável</div>
+        <h1 id="pageTitle">Visão Geral</h1>
+      </div>
+      <div class="top-actions">
+        <select id="modeSelect" aria-label="Modo">
+          <option value="aprender">Modo Aprender</option>
+          <option value="treinar">Modo Treinar</option>
+          <option value="resolver">Modo Resolver</option>
+        </select>
+        <button class="btn primary" id="btnPrint">Gerar PDF</button>
+      </div>
+    </header>
+
+    <section class="notice">
+      Ferramenta de preparação e treinamento. Em avaliação oficial, use somente se houver autorização da coordenação.
+    </section>
+
+    <section id="content"></section>
+  </main>
+</div>
+
+<template id="tpl-overview">
+  <div class="hero">
+    <div>
+      <span class="pill">Projeto completo</span>
+      <h2>Da entrada de dados ao caderno preenchido</h2>
+      <p>Preencha os dados uma única vez. A plataforma calcula, explica, valida e monta a resposta pronta para transcrição.</p>
+    </div>
+    <div class="progress-card">
+      <div class="progress-ring"><span id="progressPct">0%</span></div>
+      <div><strong>Progresso</strong><small id="progressText">0 de 0 etapas concluídas</small></div>
+    </div>
+  </div>
+  <div class="grid-3" id="overviewCards"></div>
+  <div class="panel">
+    <h3>Fluxo da plataforma</h3>
+    <div class="flow">
+      <span>Dados</span><b>→</b><span>Cálculos</span><b>→</b><span>Memoriais</span><b>→</b><span>Diagramas</span><b>→</b><span>Transcrição</span><b>→</b><span>PDF</span>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-dados">
+  <div class="panel">
+    <h3>Dados da Prova 01</h3>
+    <p class="muted">Os valores abaixo vêm do caderno/anexos. O aluno normalmente só precisa pesquisar/informar a HSP diária média quando solicitado.</p>
+    <div class="form-grid">
+      <label>Consumo mensal (kWh)<input data-field="consumoMensal" type="number" step="0.01"></label>
+      <label>Temperatura ambiente (°C)<input data-field="tempAmb" type="number" step="0.1"></label>
+      <label>Demanda de água (L/dia)<input data-field="aguaDemanda" type="number"></label>
+      <label>Temperatura de consumo (°C)<input data-field="tempConsumo" type="number"></label>
+      <label>Temperatura de armazenamento (°C)<input data-field="tempArmazenamento" type="number"></label>
+      <label>HSP média diária<input data-field="hsp" type="number" step="0.0001"></label>
+      <label>Fator orientação/inclinação<input data-field="fc" type="number" step="0.001"></label>
+      <label>Perdas totais SFCR (%)<input data-field="perdas" type="number" step="0.1"></label>
+      <label>Custo SFCR (R$/Wp)<input data-field="custoSfcr" type="number" step="0.01"></label>
+      <label>Custo SAS (R$/L)<input data-field="custoSas" type="number" step="0.01"></label>
+      <label>Módulo da prova (Wp)<input data-field="moduloWp" type="number"></label>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-sp1">
+  <div class="panel">
+    <div class="section-head">
+      <div><span class="pill">Situação-Problema 01</span><h3>SFCR × SFCR + SAS</h3></div>
+      <button class="btn primary" id="calcAllBtn">Calcular tudo</button>
+    </div>
+    <div id="sp1Summary" class="grid-3"></div>
+  </div>
+  <div id="calcSteps" class="stack"></div>
+</template>
+
+<template id="tpl-memorial">
+  <div class="panel">
+    <h3>Memorial Descritivo — Cenário Recomendado</h3>
+    <div id="memorialText" class="document-box"></div>
+  </div>
+</template>
+
+<template id="tpl-parecer">
+  <div class="panel">
+    <h3>Quadro 03 — Parecer Técnico</h3>
+    <div id="parecerRows" class="stack"></div>
+  </div>
+</template>
+
+<template id="tpl-diagrama1">
+  <div class="panel">
+    <h3>Quadro 04 — Diagrama Unifilar do SFCR</h3>
+    <p class="muted">Representação didática para o cenário recomendado.</p>
+    <div class="diagram">
+      <div class="node">32 módulos<br>550 Wp</div><div class="arrow">→</div>
+      <div class="node">Arranjo FV<br>17,6 kWp</div><div class="arrow">→</div>
+      <div class="node">Proteções CC</div><div class="arrow">→</div>
+      <div class="node">Inversor<br>15 kW / 3φ / 2 MPPT</div><div class="arrow">→</div>
+      <div class="node">Proteções CA<br>50 A + DPS II</div><div class="arrow">→</div>
+      <div class="node">Rede 127/220 V</div>
+    </div>
+    <div id="diagram1Transcription" class="transcription"></div>
+  </div>
+</template>
+
+<template id="tpl-sp2">
+  <div class="panel">
+    <span class="pill">Situação-Problema 02</span>
+    <h3>Sistema híbrido + comissionamento</h3>
+    <div class="diagram">
+      <div class="node">Módulos FV</div><div class="arrow">→</div>
+      <div class="node">String Box</div><div class="arrow">→</div>
+      <div class="node">Inversor Híbrido</div><div class="arrow">↔</div>
+      <div class="node">Rede</div>
+      <div class="branch">↓<br><div class="node inline">Bateria</div> &nbsp; <div class="node inline">Cargas prioritárias</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Quadro 06 — Comissionamento</h3>
+    <p class="muted">Insira os valores reais medidos na bancada. Quando não houver grandeza numérica, use N.A.</p>
+    <div class="table-wrap"><table><thead><tr><th>Ensaio</th><th>Valor medido</th><th>Conformidade</th></tr></thead><tbody id="commissionBody"></tbody></table></div>
+  </div>
+</template>
+
+<template id="tpl-sp3">
+  <div class="panel">
+    <span class="pill">Situação-Problema 03</span>
+    <h3>Diagnóstico e manutenção</h3>
+    <p class="muted">No modo Treinar, tente identificar o defeito antes de revelar a solução.</p>
+    <div id="faultCards" class="stack"></div>
+  </div>
+</template>
+
+<template id="tpl-apr">
+  <div class="panel">
+    <h3>APR — Situações 02 e 03</h3>
+    <p class="muted">Selecione os riscos identificados e registre as medidas de controle.</p>
+    <div id="aprList" class="check-list"></div>
+  </div>
+</template>
+
+<template id="tpl-transcricao">
+  <div class="panel">
+    <div class="section-head">
+      <div><h3>Folha para Transcrição</h3><p class="muted">Conteúdo enxuto, organizado na mesma sequência dos quadros.</p></div>
+      <button class="btn primary" id="printTranscription">Imprimir esta folha</button>
+    </div>
+    <div id="transcriptionSheet" class="paper"></div>
+  </div>
+</template>
+
+<template id="tpl-bancada">
+  <div class="panel">
+    <h3>Banco de Equipamentos da Bancada</h3>
+    <p class="muted">Dados cadastrados a partir das etiquetas fotografadas.</p>
+    <div id="equipmentCards" class="grid-2"></div>
+  </div>
+  <div class="panel">
+    <h3>Validador rápido de string</h3>
+    <div class="form-grid">
+      <label>Inversor<select id="benchInverter"></select></label>
+      <label>Módulos em série<input id="seriesCount" type="number" min="1" max="20" value="2"></label>
+    </div>
+    <div id="benchValidation" class="result-box"></div>
+  </div>
+</template>
+
+<template id="tpl-validacao">
+  <div class="panel">
+    <h3>Validação da Prova</h3>
+    <p class="muted">Checklist baseado nos resultados esperados e na lista de verificação.</p>
+    <div id="validationList" class="check-list"></div>
+  </div>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
